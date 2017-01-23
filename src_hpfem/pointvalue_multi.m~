@@ -1,0 +1,408 @@
+% Function for outputing the solution on sub-divided tetrahedrons for
+% purpose of visualisation in Paraview.
+
+% Two sets of files are created for the given "job" name specified in the
+% problem file
+% 1) .vtm block file specifying the details of the vtu files for each different subdomain
+% 2) .vtu specifiying the detials of the solution and subdivided grid for
+% a particular subdomain - one is created for each subdomain
+
+function pointvalue_multi(order,unkz,unksid,glob,globfa,eltype,...
+    unkfatp1,unkfatp2,unkfatp3,unkint,esizet,sol,coord,intma,probdata,mat,gorder,edgecof,facecof,job)
+
+% split the mesh and write out as multi-blocks
+
+[nelem dum]=size(intma);
+npoin=size(coord,1);
+%lec = zeros(6,gorder,3);
+%lfc = zeros(4,(gorder*(gorder-1)/2),3);
+flag=0 ;
+
+phxstore1 = [];
+phystore1 = [];
+phzstore1 = [];
+phxstore2 = [];
+phystore2 = [];
+phzstore2 = [];
+
+cphxstore1 = [];
+cphystore1 = [];
+cphzstore1 = [];
+cphxstore2 = [];
+cphystore2 = [];
+cphzstore2 = [];
+
+gphxstore1=[];
+gphystore1=[];
+gphzstore1=[];
+gphxstore2=[];
+gphystore2=[];
+gphzstore2=[];
+
+phh1store1=[];
+phh1store2=[];
+
+axi(1)=1;
+axi(2)=0;
+axi(3)=0;
+
+aeta(1)=0;
+aeta(2)=1;
+aeta(3)=0;
+
+azeta(1)=0;
+azeta(2)=0;
+azeta(3)=1;
+
+asxi(1)=1;
+asxi(2)=0;
+asxi(3)=0;
+
+aseta(1)=0;
+aseta(2)=1;
+aseta(3)=0;
+
+aszeta(1)=0;
+aszeta(2)=0;
+aszeta(3)=1;
+
+% Split the tetrahedron:
+% produce a splitting of the reference element
+% problems with MATLAB's delauney so fix number of points to be 4
+% 3 does not produce correct triangulation!
+if order <=2%5%2
+    [Splitref,intmasplit] = nodalCoordinatesTetraMinus1(order+1);
+else
+    [Splitref,intmasplit] = nodalCoordinatesTetraMinus1(4);
+end
+[netet dum]=size(intmasplit);
+
+[nppt dum]=size(Splitref);
+
+gesizet=(gorder+1+1)*(gorder+1+2)*(gorder+1+3)/6;
+for i = 1:nppt
+    xi = Splitref(i,1);%v(i,1);
+    eta = Splitref(i,2);
+    zeta = Splitref(i,3);
+    ph =  basis(xi,eta,zeta,axi,aeta,azeta,order,1,esizet);
+    phxstore1 = [phxstore1,ph(:,1)];
+    phystore1 = [phystore1,ph(:,2)];
+    phzstore1 = [phzstore1,ph(:,3)];
+    ph =  basis(xi,eta,zeta,axi,aeta,azeta,order,2,esizet);
+    phxstore2 = [phxstore2,ph(:,1)];
+    phystore2 = [phystore2,ph(:,2)];
+    phzstore2 = [phzstore2,ph(:,3)];
+    ph =  curlbasis(xi,eta,zeta,asxi,aseta,aszeta,order,1,esizet);
+    cphxstore1 = [cphxstore1,ph(:,1)];
+    cphystore1 = [cphystore1,ph(:,2)];
+    cphzstore1 = [cphzstore1,ph(:,3)];
+    ph =  curlbasis(xi,eta,zeta,asxi,aseta,aszeta,order,2,esizet);
+    cphxstore2 = [cphxstore2,ph(:,1)];
+    cphystore2 = [cphystore2,ph(:,2)];
+    cphzstore2 = [cphzstore2,ph(:,3)];
+% geometry
+    gph=gbasish1(xi,eta,zeta,axi,aeta,azeta,gorder+1,1,gesizet);
+    gphxstore1=[gphxstore1, gph(:,1)];
+    gphystore1=[gphystore1, gph(:,2)];
+    gphzstore1=[gphzstore1, gph(:,3)];
+    gph=gbasish1(xi,eta,zeta,axi,aeta,azeta,gorder+1,2,gesizet);
+    gphxstore2=[gphxstore2, gph(:,1)];
+    gphystore2=[gphystore2, gph(:,2)];
+    gphzstore2=[gphzstore2, gph(:,3)];    
+    phh1=basish1(gesizet,xi,eta,zeta,gorder+1,1);
+    phh1store1=[phh1store1, phh1(:,1)];
+    phh1=basish1(gesizet,xi,eta,zeta,gorder+1,2);
+    phh1store2=[phh1store2, phh1(:,1)];    
+end
+
+% for each sub-domain find the list of elements contained
+nmat=max(mat);
+helpmat=zeros(nmat,nelem);
+helpmate=zeros(nmat);
+for i=1:nelem
+    helpmate(mat(i))=helpmate(mat(i))+1;
+    helpmat(mat(i),helpmate(mat(i)))=i;
+end
+% if gorder==0 we need to define dummy arrays:
+lec=[];
+lfc=[];
+for imat = 1:nmat
+    disp(['Processing material ',num2str(imat)]);
+    nelemn=netet*helpmate(imat);
+    npoinn=0;
+    intman=[];
+    coordn=zeros(nelem*nppt,3);
+    pen=zeros(nelem*nppt,9);
+    phen=pen;
+    for je=1:helpmate(imat)
+        i=helpmat(imat,je);
+        xy = coord(intma(i,1:4),1:3);
+        
+        flag=0;
+        for j=1:6
+            for p=1:gorder
+                for k=1:3
+                    lec(j,p,k)=edgecof(glob(i,j),((p-1)*3)+k);
+                    if abs(edgecof(glob(i,j),((p-1)*3)+k))>0.0000001
+                        flag=1;
+                    end
+                end
+            end
+        end
+        
+        for j=1:4
+            for p=1:gorder*(gorder-1)/2
+                for k=1:3
+                    lfc(j,p,k)=facecof(globfa(i,j),((p-1)*3)+k);
+                end
+            end
+        end
+        
+        gesizet=(gorder+1+1)*(gorder+1+2)*(gorder+1+3)/6;
+
+    mycoord = zeros(gesizet,3);
+
+    %transfer coefficents to locations vertices
+    mycoord(1:4,1:3) = xy(1:4,1:3);
+
+        % edge functions
+        for ii=1:6
+            for p=1:gorder
+                for j=1:3
+                    
+                    mycoord(4+ii+6*(p-1),j)=lec(ii,p,j);
+                end
+            end
+        end
+
+    % face functions
+        for iii=1:4
+            for ii=1:(gorder-1)*gorder/2
+                for j=1:3
+                    mycoord(4+6*gorder+(iii-1)*gorder*(gorder-1)/2+ii,j)= lfc(iii,ii,j);
+                end
+            end
+        end
+        
+        bhelp=rowfun(unkz,unksid,unkint,order,glob,globfa,...
+            i,unkfatp1,unkfatp2,unkfatp3,esizet);
+        % generate connectivities
+        intman( (je-1)*netet+1:je*netet,:)= npoinn+intmasplit;
+
+        
+        % Stored basis functions
+        if eltype(i)==1
+            cphxstore=cphxstore1;
+            cphystore=cphystore1;
+            cphzstore=cphzstore1;
+            phxstore=phxstore1;
+            phystore=phystore1;
+            phzstore=phzstore1;
+            gphxstore=gphxstore1;
+            gphystore=gphystore1;
+            gphzstore=gphzstore1;
+            phh1store=phh1store1;            
+        else
+            cphxstore=cphxstore2;
+            cphystore=cphystore2;
+            cphzstore=cphzstore2;
+            phxstore=phxstore2;
+            phystore=phystore2;
+            phzstore=phzstore2;
+            gphxstore=gphxstore2;
+            gphystore=gphystore2;
+            gphzstore=gphzstore2;
+            phh1store=phh1store2;           
+        end
+
+        he1 = sol(bhelp(1:esizet,1),1);
+        he2 = sol(bhelp(1:esizet,1),2);
+        he3 = sol(bhelp(1:esizet,1),3);
+        
+        
+        if flag==0
+            % straight sided element
+%             [axi,aeta,azeta,asxi,aseta,aszeta,det]=jacobian(xy,0.5,0.5,...
+%                 0.5,eltype(i),lec,lfc,flag,gorder,mycoord);
+              % constant Jacobian
+              gph=[gphxstore(:,1) gphystore(:,1) gphzstore(:,1)];
+              [axi,aeta,azeta,asxi,aseta,aszeta,det]=jacobian_pre(flag,gesizet,gph,mycoord);
+            
+            
+            for j = 1:nppt
+                ph1=phh1store(:,j);
+% computx x,y,z
+                [x,y,z]= getxyzcu_pre(ph1,mycoord,gesizet);
+                
+%                 [x,y,z]= getxyzcu(xy,Splitref(j,1),Splitref(j,2),Splitref(j,3),lec,lfc,flag,gorder,eltype(i));
+                
+                npoinn=npoinn+1;
+                coordn(npoinn,:) = [x,y,z];
+                
+%                 if eltype(i) ==1
+%                     phh = (cphxstore1(:,j)*asxi(1:3))+...
+%                         (cphystore1(:,j)*aseta(1:3))+...
+%                         (cphzstore1(:,j)*aszeta(1:3));
+%                 else
+%                     phh = (cphxstore2(:,j)*asxi(1:3))+...
+%                         (cphystore2(:,j)*aseta(1:3))+...
+%                         (cphzstore2(:,j)*aszeta(1:3));
+%                     
+%                 end
+                phh=(cphxstore(:,j)*asxi(1:3))+...
+                        (cphystore(:,j)*aseta(1:3))+...
+                        (cphzstore(:,j)*aszeta(1:3));
+                
+                
+%                he = sol(bhelp(1:esizet,1),1);
+                hen1 = phh'*he1/probdata.matr.muz/probdata.matr.mu(mat(i));
+                
+%                he = sol(bhelp(1:esizet,1),2);
+                hen2= phh'*he2/probdata.matr.muz/probdata.matr.mu(mat(i));
+                
+%                he = sol(bhelp(1:esizet,1),3);
+                hen3= phh'*he3/probdata.matr.muz/probdata.matr.mu(mat(i));
+
+                hen=[hen1;hen2;hen3];
+                
+                %       store the magentic field at each point
+                phen(npoinn,:) = hen.';
+                
+                
+%                 if eltype(i) ==1
+%                     phh = (phxstore1(:,j)*axi(1:3))+...
+%                         (phystore1(:,j)*aeta(1:3))+...
+%                         (phzstore1(:,j)*azeta(1:3));
+%                 else
+%                     phh = (phxstore2(:,j)*axi(1:3))+...
+%                         (phystore2(:,j)*aeta(1:3))+...
+%                         (phzstore2(:,j)*azeta(1:3));
+%                     
+%                 end
+                phh = (phxstore(:,j)*axi(1:3))+...
+                         (phystore(:,j)*aeta(1:3))+...
+                         (phzstore(:,j)*azeta(1:3));
+
+
+%                he = sol(bhelp(1:esizet,1),1);
+                en1 = phh'*he1*probdata.matr.sigma(mat(i));
+                
+%                he = sol(bhelp(1:esizet,1),2);
+                en2 = phh'*he2*probdata.matr.sigma(mat(i));
+                
+%                he = sol(bhelp(1:esizet,1),3);
+                en3 = phh'*he3*probdata.matr.sigma(mat(i));
+                
+                en=[en1;en2;en3];
+               
+                %       store the eddy current at each point
+                pen(npoinn,:) =en.';
+                
+            end
+        else
+            % curved sided element
+            
+            
+            for j = 1:nppt
+                ph1=phh1store(:,j);
+% computx x,y,z
+                [x,y,z]= getxyzcu_pre(ph1,mycoord,gesizet);
+                
+%                 [x,y,z]= getxyzcu(xy,Splitref(j,1),Splitref(j,2),Splitref(j,3),lec,lfc,flag,gorder,eltype(i));
+                npoinn=npoinn+1;
+                coordn(npoinn,:) = [x,y,z];
+                
+               gph=[gphxstore(:,j) gphystore(:,j) gphzstore(:,j)];
+              [axi,aeta,azeta,asxi,aseta,aszeta,det]=jacobian_pre(flag,gesizet,gph,mycoord);
+                
+%                 [axi,aeta,azeta,asxi,aseta,aszeta,det]=jacobian(xy,Splitref(j,1),Splitref(j,2),Splitref(j,3),...
+%                     eltype(i),lec,lfc,flag,gorder,mycoord);
+                
+%                 if eltype(i) ==1
+%                     phh = (cphxstore1(:,j)*asxi(1:3))+...
+%                         (cphystore1(:,j)*aseta(1:3))+...
+%                         (cphzstore1(:,j)*aszeta(1:3));
+%                 else
+%                     phh = (cphxstore2(:,j)*asxi(1:3))+...
+%                         (cphystore2(:,j)*aseta(1:3))+...
+%                         (cphzstore2(:,j)*aszeta(1:3));
+%                     
+%                 end
+                phh=(cphxstore(:,j)*asxi(1:3))+...
+                        (cphystore(:,j)*aseta(1:3))+...
+                        (cphzstore(:,j)*aszeta(1:3));
+                
+                
+%                he = sol(bhelp(1:esizet,1),1);
+                hen1 = phh'*he1/probdata.matr.muz/probdata.matr.mu(mat(i));
+                
+%                he = sol(bhelp(1:esizet,1),2);
+                hen2= phh'*he2/probdata.matr.muz/probdata.matr.mu(mat(i));
+                
+%                he = sol(bhelp(1:esizet,1),3);
+                hen3= phh'*he3/probdata.matr.muz/probdata.matr.mu(mat(i));
+
+                hen=[hen1;hen2;hen3];
+                
+                %       store the magentic field at each point
+                phen(npoinn,:) = hen.';
+                
+                
+%                 if eltype(i) ==1
+%                     phh = (phxstore1(:,j)*axi(1:3))+...
+%                         (phystore1(:,j)*aeta(1:3))+...
+%                         (phzstore1(:,j)*azeta(1:3));
+%                 else
+%                     phh = (phxstore2(:,j)*axi(1:3))+...
+%                         (phystore2(:,j)*aeta(1:3))+...
+%                         (phzstore2(:,j)*azeta(1:3));
+%                     
+%                 end
+                phh = (phxstore(:,j)*axi(1:3))+...
+                      (phystore(:,j)*aeta(1:3))+...
+                      (phzstore(:,j)*azeta(1:3));
+                
+                
+%                he = sol(bhelp(1:esizet,1),1);
+                en1 = phh'*he1*probdata.matr.sigma(mat(i));
+                
+%                he = sol(bhelp(1:esizet,1),2);
+                en2 = phh'*he2*probdata.matr.sigma(mat(i));
+                
+%                he = sol(bhelp(1:esizet,1),3);
+                en3 = phh'*he3*probdata.matr.sigma(mat(i));
+                
+                en=[en1;en2;en3];
+            
+                %       store the eddy current at each point
+                pen(npoinn,:) =en.';
+                
+            end
+            
+        end
+
+    end
+    % write out this VTU file
+    disp('writing data to the file...')
+    filename=[job '_' num2str(imat-1) '.vtu']
+    vtuk_puvw_write ( filename, npoinn, nelemn, ...
+   coordn, intman, pen, phen )
+    disp('done')
+end
+% write out multi-block file
+filename=[job '.vtm'];
+output_unit = fopen(filename, 'w');
+
+fprintf ( output_unit, '<VTKFile type="vtkMultiBlockDataSet" version="0.1" byte_order="BigEndian"\n');
+fprintf ( output_unit, 'compressor="vtkZLibDataCompressor">\n');
+fprintf ( output_unit, '<vtkMultiBlockDataSet>\n');
+for imat=1:nmat
+    filename=[job '_' num2str(imat-1) '.vtu'];
+    text=['<DataSet group="' num2str(imat-1) '" dataset="' num2str(imat-1) '" file="' filename '"/>\n'];
+    fprintf ( output_unit, text);
+
+end
+fprintf ( output_unit, '</vtkMultiBlockDataSet>\n');
+fprintf ( output_unit, '</VTKFile>\n');
+fclose(output_unit);
+
