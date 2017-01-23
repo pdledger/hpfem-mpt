@@ -9,7 +9,7 @@ addpath(genpath('./'))
 % problem 2 = conducting magnetic spheroid
 % problem 3 = nested sphere conducting and magnetic
 % problem 4 = conducting magnetic Remington shell casing
-% problem 5 = Taufiq steel gun
+% problem 5 = Simple steel gun L shape
 % problem 6 = 72 anologue detenator
 % problem 7 = belt buckle
 % problem 8 = coin
@@ -17,9 +17,9 @@ addpath(genpath('./'))
 % problem 10 = Ansys Mesh (Sphere)
 
 % Select which problem to run.
-problem =5;
+problem =1;
 % Set polynomial degree of elements
-pm =4;
+pm =0;
 % order of polynomial
 maxorder = 10;
 if pm > maxorder
@@ -51,8 +51,8 @@ elseif problem==4
     profun=@problem1remington;
     probdata = profun(pm);
 elseif problem==5
-    % unit Taufiq gun, scaled by delta
-    profun=@problem1taufiqgun;
+    % unit steel gun, scaled by delta
+    profun=@problem1steelgun;
     probdata = profun(pm);
 elseif problem==6
     % unit landmine 72 analogue detanator, scaled by delta
