@@ -8,9 +8,9 @@ The MPT characterises the shape, conductivity, permeability of conducting permea
 
 The provided program computes the MPT for a given object computed by solving 3 vectorial transmission problems simultaneously using hpfem [1,2]. This involves scaling the object and generating a mesh for the same shaped unit-sized conducting permeable object placed in a large non-conducting domain with the truncation domain set a large distance from the object. The domain needs to be discretised by an unstructured tetrahedral mesh, which should be done externally. Reading meshes generated from Netgen are currently supported.
 
-The hpfem method uses a Nedelec (H(curl)) conforming hierarchic finite element basis. This allows for the coarse meshes and the increasing of the polynomial degree to ensure convergence (p-refinement). In the case of smooth solutions, p-refinement leads to exponential convergence of the solution (and the MPT coefficients).
+The hpfem method uses a N\'ed\'elec (H(curl)) conforming hierarchic finite element basis [3]. This allows for the coarse meshes and the increasing of the polynomial degree to ensure convergence (p-refinement). In the case of smooth solutions, p-refinement leads to exponential convergence of the solution (and the MPT coefficients).
 
-To solve the resulting 3 linear systems a pre-conditioned GMRES solver using a block-diagonal Jacobi preconditioner, built from different block of the hpfem basis is employed and leads to rapid convergence of the solution for each problem.
+To solve the resulting 3 linear systems a pre-conditioned GMRES solver using a block-diagonal Jacobi preconditioner [4], built from different block of the hpfem basis, is employed and leads to rapid convergence of the solution for each problem.
 
 Once the system is solved the MPT is computed and displayed in the command window.
 
@@ -43,10 +43,15 @@ A detailed tutorial is in preparation, which will explain how to setup problem f
 #Referencing
 If you use this tool please acknowledge the work that has been put in to creating it by citing the following items in your bibliography
 
-[1] P.D. Ledger, W.R.B. Lionheart Understanding the Magnetic Polarizability Tensor. IEEE Transactions on Magnetics DOI:10.1109/TMAG.2015.2507169 (http://ieeexplore.ieee.org/document/7350159/)
+[1] P.D. Ledger, W.R.B. Lionheart, Understanding the Magnetic Polarizability Tensor. IEEE Transactions on Magnetics DOI:10.1109/TMAG.2015.2507169 (http://ieeexplore.ieee.org/document/7350159/)
 
-[2] P.D. Ledger, W.R.B. Lionheart Characterizing the shape and material properties of hidden targets from magnetic induction data. IMA Journal of Applied Mathematics, DOI:10.1093/imamat/hxv015 (https://academic.oup.com/imamat/article-lookup/doi/10.1093/imamat/hxv015)
+[2] P.D. Ledger, W.R.B. Lionheart, Characterizing the shape and material properties of hidden targets from magnetic induction data. IMA Journal of Applied Mathematics, DOI:10.1093/imamat/hxv015 (https://academic.oup.com/imamat/article-lookup/doi/10.1093/imamat/hxv015)
 
+The underlying hpfem technology builds on the discretisation and preconditioner described in
+
+[3] S. Sch\"oberl, S. Zaglmayr, High order N\'ed\'elec elements with local complete sequence propert. COMPEL: International Journal for computational and mathematics in Electrical and Electronic Engineering 24(2):374-384, 2005.
+
+[4] P.D. Ledger, S. Zaglmayr hp-Finite element simulation of three-diemensional eddy current problems on multiply connected domains. Computer Methods in Applied Mechanics and Engineering, 199, 2386-3401, 2010.
 #License 
 
 The hpfem-mpt source code is released under the GNU general public license.
