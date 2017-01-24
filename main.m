@@ -206,7 +206,8 @@ display(['Program using p = ',num2str(order),'elements']);
 display(['Size of elemental arrays = ',num2str(esizet)]);
 
 % define nip = number of integration points in each direction
-nipd = floor(((2*(order+1))+1+order)/2);
+%nipd = floor(((2*(order+1))+1+order)/2);
+nipd=ceil((2*(order+1)+max(gorder,order)+1+1)/2);
 if nipd<=2
     nipd=2;
 end
