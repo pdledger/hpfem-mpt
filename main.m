@@ -186,7 +186,7 @@ if gorder >=1
     % 4 = quadratic geometry file
     display(['The geometry type is ',num2str(g1)]);
     if g1 ==2
-        [edgecof,facecof,pher]=getblendh1(nelem,nside,nface,intma,coord,...
+        [edgecof,facecof,pher,coord]=getblendh1(nelem,nside,nface,intma,coord,...
             cond,glob,globfa,eltype,gorder,mat,probdata);
     elseif g1 ==4
         % This requires the mwah to be generated using quadractic option in

@@ -2,7 +2,7 @@
 % projection from an exact sphere geometry to a set of heirarchic polynomials of
 % degree gorder+1
 
-function [edgecof,facecof,ph]=getblendh1(nelem,nside,nface,intma,coord,...
+function [edgecof,facecof,ph,coord]=getblendh1(nelem,nside,nface,intma,coord,...
     cond,glob,globfa,eltype,gorder,mat,probdata)
 
 % edgecof = blending coefficents for edge correction

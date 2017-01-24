@@ -26,15 +26,20 @@ nhf=0;
 nhig=0;
 nhi=0;
 if order > 0
-
+    
     nstart=nend+1;
     nend=max(max(unksid));
     if nend> 0
         nheg=nend-nz;
-
-% extract zero block
+        
+        % extract zero block
         XEgEg=Xpre(nstart:nend,nstart:nend);
-        size(XEgEg);
+        %         size(XEgEg)
+        %         whos XEgEg
+        [XEgEg]=extractsparse(XEgEg,unksid,nstart-1);
+        %         size(XEgEg)
+        %         whos XEgEg
+        %         pause
     else
         nend=nstart-1;
         % no edge gradients!
@@ -42,64 +47,80 @@ if order > 0
 end
 
 if order > 1
-% Find number of gradient face unknowns
+    % Find number of gradient face unknowns
     nstart=nend+1;
     nend=max(max(unkfatp1));
     if nend > 0
         nhfg=nend-nz-nheg;
-
-    % extract face gradient block
+        
+        % extract face gradient block
         XFgFg=Xpre(nstart:nend,nstart:nend);
-        size(XFgFg);
+        %         size(XFgFg);
+        %         whos XFgFg
+        [XFgFg]=extractsparse(XFgFg,unkfatp1,nstart-1);
+        %         size(XFgFg)
+        %         whos XFgFg
+        %         pause
+        
     else
         nend=nstart-1;
         % no face gradients
     end
-
-% Find number of face (non-gradient) unknowns
-nstart=nend+1;
-nend=max(max(unkfatp3));
-nhf=nend-nz-nheg-nhfg;
-
-% extract non-gradient block
-XFF=Xpre(nstart:nend,nstart:nend);
-size(XFF);
+    
+    % Find number of face (non-gradient) unknowns
+    nstart=nend+1;
+    nend=max(max(unkfatp3));
+    nhf=nend-nz-nheg-nhfg;
+    
+    % extract non-gradient block
+    XFF=Xpre(nstart:nend,nstart:nend);
+    %         size(XFF)
+    %         whos XFF
+    % we need to put unkfatp2 and unkfatp3 together!
+    unkfatpng=[unkfatp2 unkfatp3];
+    
+    [XFF]=extractsparse(XFF,unkfatpng,nstart-1);
+    %         size(XFF)
+    %         whos XFF
+    %         pause
 end
 
 if order > 2
-k=0;
-for ii=0:order-3
-    for jj=0:order-3
-        for kk=0:order-3
-            if ii+jj+kk <= order-3
-                k=k+1;
+    k=0;
+    for ii=0:order-3
+        for jj=0:order-3
+            for kk=0:order-3
+                if ii+jj+kk <= order-3
+                    k=k+1;
+                end
             end
         end
     end
-end
-nintbas=k;
-
-% Find number of gradient interior unknowns
-nstart=nend+1;
-nend=max(max(unkint(:,1:nintbas)));
-if nend > 0
-nhig=nend-nz-nheg-nhfg-nhf;
-
-% extract gradient interior block
-XIgIg=Xpre(nstart:nend,nstart:nend);
-size(XIgIg);
-else
-    nend=nstart-1;
-end
-
-% Find number of non-gradient interior unknowns
-nstart=nend+1;
-nend=max(max(unkint));
-nhi=nend-nz-nheg-nhfg-nhf-nhig;
-
-% extract interior block
-XII=Xpre(nstart:nend,nstart:nend);
-size(XII);
-
-
+    nintbas=k;
+    
+    % Find number of gradient interior unknowns
+    nstart=nend+1;
+    nend=max(max(unkint(:,1:nintbas)));
+    if nend > 0
+        nhig=nend-nz-nheg-nhfg-nhf;
+        
+        % extract gradient interior block
+        XIgIg=Xpre(nstart:nend,nstart:nend);
+        % block diagonal already
+        
+    else
+        nend=nstart-1;
+    end
+    
+    % Find number of non-gradient interior unknowns
+    nstart=nend+1;
+    nend=max(max(unkint));
+    nhi=nend-nz-nheg-nhfg-nhf-nhig;
+    
+    % extract interior block
+    XII=Xpre(nstart:nend,nstart:nend);
+    size(XII);
+    
+    % block diagonal already
+    
 end

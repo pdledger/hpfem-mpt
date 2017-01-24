@@ -20,7 +20,7 @@ A detailed tutorial is in preparation.
  
 #Installation
 
-The Netgen mesh generator (https://sourceforge.net/projects/netgen-mesher/) and MATLAB (https://www.mathworks.com/products/matlab.html) (tested on version 2015b) are required.
+The Netgen mesh generator (https://sourceforge.net/projects/netgen-mesher/) and MATLAB (https://www.mathworks.com/products/matlab.html) (tested on version 2015b) are required. To visualise the solutions to the transmission problem Paraview (http://www.paraview.org) should be installed.
 
 1. Save or clone the repository to your machine.
 
@@ -36,7 +36,7 @@ The program is run by typing
 
 main
 
-in the MATLAB command window, with the path set to the home directory of the program. The polynomial degree and the different sample objects can selected by controlling the simple flags at the top of main.m
+in the MATLAB command window, with the path set to the home directory of the program. The polynomial degree and the different sample objects can selected by controlling the simple flags at the top of main.m. The program then computes the MPT and outputs vtm and vtu files for visualisation in Paraview. The vtm file references the vtu files and it is the vtm file that should be opened in Paraview.
 
 A detailed tutorial is in preparation, which will explain how to setup problem files and meshes for other objects.
 
