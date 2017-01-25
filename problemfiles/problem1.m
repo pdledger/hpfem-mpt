@@ -40,10 +40,6 @@ probdata.jb.meshtype = meshtype;
 probdata.jb.order=order;
 %------------------------------------------------------------------job data
 
-
-probdata.sol.regopt =2 % 1- use regularisation with cg for gradent blocks
-                       % 2- use regularisation with direct solve for gradient blocks
-                       % 3- direct solve
 %material data-------------------------------------------------------------
 nmat = 2;              % Number of materieals
 muz = 1.256637061435917e-06; % Mu_z
