@@ -18,7 +18,7 @@ order=pm;
 % l2 norm norm of the tensor
 % % erroroption = 0 - do not calculate error
 % % erroroption = 1 - calculate error
- erroroption = 0; % Exact E field not entered!
+ erroroption = 0; 
  
 % % output the VTK file
 % % vtkoption = 0 - do not output

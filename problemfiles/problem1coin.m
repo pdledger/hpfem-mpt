@@ -23,7 +23,7 @@ plotoption = 1;
 % Calculate the L2 norm of the error for the tensor
 % % erroroption = 0 - do not calculate error
 % % erroroption = 1 - calculate error
-erroroption = 0; % Exact E field not entered!
+erroroption = 0; 
  
 % % output the VTK file
 % % vtkoption = 0 - do not output

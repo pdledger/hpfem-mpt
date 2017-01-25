@@ -23,7 +23,7 @@ order=pm;
 % Calculate the L2 norm of the error for the tensor
 % % erroroption = 0 - do not calculate error
 % % erroroption = 1 - calculate error
- erroroption = 0; % Exact E field not entered!
+ erroroption = 0; 
  
 % % output the VTK file
 % % vtkoption = 0 - do not output
@@ -57,9 +57,9 @@ epl(1) = 0;
 sigma(1) = 0.1;
 jsrc(1,1:3) = [0  0  0];
 % Mat 2
-mu(2) = 100%1.5%1.5;
+mu(2) = 100;
 epl(2) = 0;
-sigma(2) = 4.5e6%4e6%5.96e7;
+sigma(2) = 4.5e6;
 jsrc(2,1:3) = [0  0  0];
 
 % specify the material to be used a conductor conductors
