@@ -48,7 +48,7 @@ probdata.sol.regopt =2 % 1- use regularisation with cg for gradent blocks
 nmat = 2;              % Number of materieals
 muz = 1.256637061435917e-06; % Mu_z
 epz = 0;                     % Ep_z
-omega =2*pi*133.5;           % Omega
+omega =133.5;           % Omega
 
 % For each subdomain specify parameters
 % Mu_r, Ep_r, Sigma, J
