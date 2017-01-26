@@ -50,7 +50,7 @@ epz = 0;                     % Ep_z
 omega =133.5;                % Omega
 
 % Mu_r, Ep_r, Sigma, J
-% Mat 1
+% Free space
 mu(1) = 1;
 epl(1) = 0;
 sigma(1) = 0.1;
@@ -61,7 +61,7 @@ epl(2) = 0;
 sigma(2) = 0.1; 
 jsrc(2,1:3) = [0  0  0];
 
-% Mat 2
+% Object
 mu(3) = 1.000022;
 epl(3) = 0;
 sigma(3) = 3.5e7;
@@ -76,7 +76,6 @@ matcond=[3];
 delta = 0.01;  % Object size
 shift=[0 0 0]; % Object shift
 
-probdata.matr.nmat=nmat;
 probdata.matr.muz=muz;
 probdata.matr.epz=epz;
 probdata.matr.omega=omega;

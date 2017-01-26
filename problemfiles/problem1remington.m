@@ -40,20 +40,19 @@ probdata.jb.meshtype = meshtype;
 probdata.jb.order=order;
 
 %material data-------------------------------------------------------------
-nmat = 8;         % Number of materieals
 muz = 1.256637061435917e-06; % Mu_z
 epz = 0;                     % Ep_z
 omega =133.5e2;              % Omega
 
 % Mu_r, Ep_r, Sigma, J
-% Mat 1
+% Free space
 for i=1:4
 mu(i) = 1;
 epl(i) = 0;
 sigma(i) = 10;%0.1; % thin conductor requires increased regularisation paramter
 jsrc(i,1:3) = [0  0  0];
 end
-% Mat 2
+% Object
 for i=5:8
 mu(i) = 1.0;
 epl(i) = 0;
@@ -69,7 +68,6 @@ matcond=[5:8];
 delta = 0.001;  % Object size
 shift=[0 0 0]; % Object shift
 
-probdata.matr.nmat=nmat;
 probdata.matr.muz=muz;
 probdata.matr.epz=epz;
 probdata.matr.omega=omega;

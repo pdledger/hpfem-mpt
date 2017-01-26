@@ -45,7 +45,6 @@ probdata.jb.meshtype = meshtype;
 probdata.jb.order=order;
 
 %material data-------------------------------------------------------------
-nmat = 2;         % Number of materieals
 muz = 1.256637061435917e-06; % Mu_z
 epz = 0;                     % Ep_z
 omega =133.5% 100e3%133.5;               % Omega
@@ -71,7 +70,6 @@ matcond=[2];
 delta = 0.01;  % Object size
 shift=[0 0 0]; % Object shift
 
-probdata.matr.nmat=nmat;
 probdata.matr.muz=muz;
 probdata.matr.epz=epz;
 probdata.matr.omega=omega;

@@ -50,7 +50,6 @@ probdata.sol.regopt =2 % 1- use regularisation with cg for gradent blocks
                        % 2- use regularisation with direct solve for gradient blocks
                        % 3- direct solve
 %material data-------------------------------------------------------------
-nmat = 2;              % Number of materieals
 muz = 1.256637061435917e-06; % Mu_z
 epz = 0;                     % Ep_z
 omega =2*pi*133.5;           % Omega
@@ -78,7 +77,6 @@ matcond=[2];
 delta = 0.01;  % Object size
 shift=[0 0 0]; % Object shift
 
-probdata.matr.nmat=nmat;
 probdata.matr.muz=muz;
 probdata.matr.epz=epz;
 probdata.matr.omega=omega;
