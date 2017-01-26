@@ -23,7 +23,7 @@ plotoption = 1;
 % Calculate the L2 norm of the error for the tensor
 % % erroroption = 0 - do not calculate error
 % % erroroption = 1 - calculate error
-erroroption = 0; % Exact E field not entered!
+erroroption = 0; 
  
 % % output the VTK file
 % % vtkoption = 0 - do not output
@@ -49,7 +49,6 @@ probdata.sol.regopt =2 % 1- use regularisation with cg for gradent blocks
                        % 2- use regularisation with direct solve for gradient blocks
                        % 3- direct solve
 %material data-------------------------------------------------------------
-nmat = 2;         % Number of materieals
 muz = 1.256637061435917e-06; % Mu_z
 epz = 0;                     % Ep_z
 omega =133.5;                % Omega
@@ -75,7 +74,6 @@ matcond=[2];
 delta = 0.01;  % Object size
 shift=[0 0 0]; % Object shift
 
-probdata.matr.nmat=nmat;
 probdata.matr.muz=muz;
 probdata.matr.epz=epz;
 probdata.matr.omega=omega;

@@ -18,7 +18,7 @@ plotoption = 1;
 % Calculate the L2 norm of the error for the tensor
 % % erroroption = 0 - do not calculate error
 % % erroroption = 1 - calculate error
-erroroption = 0; % Exact E field not entered!
+erroroption = 0; 
  
 % % output the VTK file
 % % vtkoption = 0 - do not output
@@ -39,23 +39,22 @@ probdata.jb.meshtype = meshtype;
 probdata.jb.order=order;
 
 %material data-------------------------------------------------------------
-nmat = 3;         % Number of materieals
 muz = 1.256637061435917e-06; % Mu_z
 epz = 0;                     % Ep_z
 omega =133.5e2%               % Omega
 
 % Mu_r, Ep_r, Sigma, J
-% Mat 1
+% Free space
 mu(1) = 1;
 epl(1) = 0;
 sigma(1) = 0.1;
 jsrc(1,1:3) = [0  0  0];
-% Mat 2
 mu(2) = 1;
 epl(2) = 0;
 sigma(2) = 0.1;
 jsrc(2,1:3) = [0  0  0];
 
+% Object
 mu(3) = 1.5;
 epl(3) = 0;
 sigma(3) = 5.96e7;
@@ -70,7 +69,6 @@ matcond=[3];
 delta = 0.01;  % Object size
 shift=[0 0 0]; % Object shift
 
-probdata.matr.nmat=nmat;
 probdata.matr.muz=muz;
 probdata.matr.epz=epz;
 probdata.matr.omega=omega;
