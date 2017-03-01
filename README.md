@@ -16,7 +16,7 @@ Once the system is solved the MPT is computed and displayed in the command windo
 
 The solver outputs a vtm and vtu files in order to allow visualisation of the solutions to the transmission problems using Paraview.
 
-A detailed tutorial is in preparation.
+A detailed tutorial is in included in hpfem-mpt_tutorial.pdf.
  
 #Installation
 
@@ -38,7 +38,7 @@ main
 
 in the MATLAB command window, with the path set to the home directory of the program. The polynomial degree and the different sample objects can selected by controlling the simple flags at the top of main.m. The program then computes the MPT and outputs vtm and vtu files for visualisation in Paraview. The vtm file references the vtu files and it is the vtm file that should be opened in Paraview.
 
-A detailed tutorial is in preparation, which will explain how to setup problem files and meshes for other objects.
+A detailed tutorial is included in hpfem-mpt_tutorial.pdf, which explains how to setup problem files and meshes for other objects.
 
 #Referencing
 If you use this tool please acknowledge the work that has been put in to creating it by citing the following items in your bibliography
